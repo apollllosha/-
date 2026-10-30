@@ -1,0 +1,2533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Светлые Воспоминания — Увядающие Воспоминания — Забвение</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-grad-1: #f0f7fc;
+      --bg-grad-2: #d3e3f0;
+      --bg-grad-3: #c2d7e8;
+      --chassis-side-1: #eef6fc;
+      --chassis-side-2: #e3eef7;
+      --chassis-center-1: #e2eff8;
+      --chassis-center-2: #d8e8f3;
+      --chassis-center-3: #dfecf6;
+      --surface-recessed: #dceaf5;
+      --surface-card-1: #f2f8fd;
+      --surface-card-2: #dbeaf6;
+      --shadow-rgb: 145, 175, 202;
+      --text-main: #486887;
+      --text-muted: #6a87a3;
+      --accent-led: #38bdf8;
+      --accent-led-glow: rgba(56, 189, 248, 0.7);
+      --accent-strong: #0284c7;
+      --vinyl-1: #4e7294;
+      --vinyl-2: #3b5d7e;
+      --vinyl-label-1: #e7f4fe;
+      --vinyl-label-2: #b9daf2;
+      --scope-bg-1: #cde0ef;
+      --scope-bg-2: #d7e7f5;
+      --fader-slot: #c5daeb;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 25%, var(--bg-grad-1) 0%, var(--bg-grad-2) 65%, var(--bg-grad-3) 100%);
+      font-family: 'Chakra Petch', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button {
+      border: none;
+      background: none;
+      font-family: inherit;
+      color: inherit;
+      outline: none;
+    }
+
+    /* Ambient film grain overlay that intensifies with Decay */
+    #memory-grain {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      opacity: 0.03;
+      background-image: radial-gradient(rgba(75, 85, 95, 0.4) 1px, transparent 0);
+      background-size: 3px 3px;
+      transition: opacity 0.2s ease;
+    }
+
+    /* Fixed-ratio viewport wrapper so the 3-column layout NEVER stacks or breaks */
+    #synth-scale-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center center;
+    }
+
+    /* Main Hardware Synth Enclosure (Locked 3-Column Horizontal Proportion like Photo 2) */
+    .synth-enclosure {
+      position: relative;
+      width: 1080px;
+      height: 750px;
+      border-radius: 24px;
+      background: var(--chassis-center-2);
+      box-shadow:
+        24px 32px 60px rgba(var(--shadow-rgb), 0.55),
+        -16px -16px 45px rgba(255, 255, 255, 0.9),
+        inset 0 2px 3px rgba(255, 255, 255, 0.95),
+        inset 0 -3px 6px rgba(var(--shadow-rgb), 0.45);
+      display: grid;
+      grid-template-columns: 276px 528px 276px;
+      grid-template-rows: 750px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* Side Panels with contoured inner bevels */
+    .panel-side {
+      position: relative;
+      background: linear-gradient(145deg, var(--chassis-side-1) 0%, var(--chassis-side-2) 100%);
+      padding: 24px 22px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: stretch;
+      z-index: 2;
+      height: 100%;
+    }
+
+    .panel-left {
+      border-right: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 6px 0 18px rgba(var(--shadow-rgb), 0.25);
+    }
+
+    .panel-right {
+      border-left: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: -6px 0 18px rgba(var(--shadow-rgb), 0.25);
+    }
+
+    .panel-center {
+      position: relative;
+      background: linear-gradient(180deg, var(--chassis-center-1) 0%, var(--chassis-center-2) 50%, var(--chassis-center-3) 100%);
+      padding: 22px 28px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1;
+      height: 100%;
+    }
+
+    /* Decorative curved contour SVG seams matching FXR-805 */
+    .seam-svg-left,
+    .seam-svg-right {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 34px;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .seam-svg-left { left: 260px; }
+    .seam-svg-right { right: 260px; transform: scaleX(-1); }
+
+    /* Typography */
+    .header-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--text-main);
+      text-align: center;
+      text-transform: uppercase;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+
+    .sub-label {
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.13em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    /* Interactive Title Button (Click to Play/Stop Melody) */
+    .title-trigger-btn {
+      position: relative;
+      width: 100%;
+      height: 46px;
+      padding: 0 24px;
+      border-radius: 13px;
+      background: linear-gradient(145deg, var(--surface-card-1), var(--surface-card-2));
+      box-shadow:
+        5px 6px 14px rgba(var(--shadow-rgb), 0.55),
+        -4px -4px 12px rgba(255, 255, 255, 0.95),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.14s ease, box-shadow 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.65);
+    }
+
+    .title-trigger-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .title-trigger-btn:active,
+    .title-trigger-btn.playing {
+      background: linear-gradient(145deg, var(--surface-card-2), var(--surface-card-1));
+      box-shadow:
+        inset 3px 3px 7px rgba(var(--shadow-rgb), 0.65),
+        inset -3px -3px 7px rgba(255, 255, 255, 0.95);
+    }
+
+    .title-led {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      opacity: 0.45;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .title-trigger-btn.playing .title-led {
+      opacity: 1;
+      background: var(--accent-led);
+      box-shadow: 0 0 8px var(--accent-led), 0 0 14px var(--accent-led-glow);
+    }
+
+    #synth-dynamic-title {
+      font-size: 16px;
+      letter-spacing: 0.15em;
+    }
+
+    /* Side Channel Header */
+    .side-channel-header {
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* FX Section Header Pill + LED Toggle */
+    .fx-module {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .fx-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .fx-badge {
+      width: 132px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--surface-recessed);
+      box-shadow:
+        inset 2px 2px 4px rgba(var(--shadow-rgb), 0.55),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      color: var(--text-main);
+    }
+
+    .led-toggle-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--surface-recessed);
+      box-shadow:
+        inset 2px 2px 4px rgba(var(--shadow-rgb), 0.5),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+
+    .led-toggle-btn:active {
+      transform: scale(0.95);
+    }
+
+    .led-dot {
+      width: 8.5px;
+      height: 8.5px;
+      border-radius: 50%;
+      background: rgba(var(--shadow-rgb), 0.7);
+      box-shadow:
+        inset 1px 1px 2px rgba(70, 90, 110, 0.45),
+        0 1px 1px rgba(255, 255, 255, 0.8);
+      transition: all 0.2s ease;
+    }
+
+    .led-toggle-btn.active .led-dot {
+      background: var(--accent-led);
+      box-shadow:
+        0 0 8px var(--accent-led),
+        0 0 14px var(--accent-led-glow),
+        inset 0 0 3px #ffffff;
+    }
+
+    /* Neumorphic Rotary Knobs */
+    .knobs-pair {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 2px 4px;
+    }
+
+    .knob-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .knob-housing {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: ns-resize;
+      touch-action: none;
+    }
+
+    .knob-ticks {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .knob-cap {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--surface-card-1) 0%, var(--surface-card-2) 100%);
+      box-shadow:
+        5px 6px 12px rgba(var(--shadow-rgb), 0.65),
+        -4px -4px 10px rgba(255, 255, 255, 0.95),
+        inset 0 1px 1px rgba(255, 255, 255, 0.95);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: box-shadow 0.15s ease;
+    }
+
+    .knob-housing:hover .knob-cap {
+      box-shadow:
+        6px 7px 14px rgba(var(--shadow-rgb), 0.8),
+        -4px -4px 12px rgba(255, 255, 255, 1),
+        0 0 0 2px var(--accent-led-glow);
+    }
+
+    .knob-cap::after {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--surface-card-2) 0%, var(--surface-card-1) 100%);
+      box-shadow: inset 1px 1px 3px rgba(var(--shadow-rgb), 0.35);
+    }
+
+    .knob-indicator {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .knob-indicator::before {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2.5px;
+      height: 9px;
+      border-radius: 2px;
+      background: var(--text-main);
+      box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Dual-Channel Waveform Selector Bar */
+    .dual-voice-bar {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .voice-selector-box {
+      background: var(--surface-recessed);
+      border-radius: 12px;
+      padding: 7px 10px;
+      box-shadow:
+        inset 2px 2px 5px rgba(var(--shadow-rgb), 0.5),
+        inset -2px -2px 5px rgba(255, 255, 255, 0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .voice-selector-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wave-buttons-row {
+      display: flex;
+      gap: 7px;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .soft-square-btn {
+      position: relative;
+      flex: 1;
+      height: 42px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, var(--surface-card-1), var(--surface-card-2));
+      box-shadow:
+        3px 4px 8px rgba(var(--shadow-rgb), 0.55),
+        -3px -3px 7px rgba(255, 255, 255, 0.95),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      color: var(--text-main);
+    }
+
+    .soft-square-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .soft-square-btn.active {
+      background: linear-gradient(145deg, var(--surface-card-2), var(--surface-card-1));
+      box-shadow:
+        inset 2px 2px 5px rgba(var(--shadow-rgb), 0.65),
+        inset -2px -2px 5px rgba(255, 255, 255, 0.95);
+      color: var(--accent-strong);
+    }
+
+    .btn-wave-label {
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .corner-led {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(var(--shadow-rgb), 0.65);
+      transition: all 0.2s ease;
+    }
+
+    .soft-square-btn.active .corner-led {
+      background: var(--accent-led);
+      box-shadow: 0 0 6px var(--accent-led), 0 0 10px var(--accent-led-glow);
+    }
+
+    /* Stereo Level Meters inside Channel Selector */
+    .meter-track {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(var(--shadow-rgb), 0.35);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 12%;
+      border-radius: 2px;
+      background: var(--accent-led);
+      box-shadow: 0 0 6px var(--accent-led);
+      transition: width 0.08s ease;
+    }
+
+    /* HERO ELEMENT: Vinyl Record Deck + Slider */
+    .vinyl-memory-deck {
+      width: 100%;
+      background: linear-gradient(145deg, var(--surface-card-2), var(--surface-card-1));
+      border-radius: 16px;
+      padding: 12px 15px;
+      box-shadow:
+        inset 4px 4px 9px rgba(var(--shadow-rgb), 0.55),
+        inset -4px -4px 9px rgba(255, 255, 255, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .vinyl-top-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .vinyl-platter-wrap {
+      position: relative;
+      width: 118px;
+      height: 118px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .vinyl-platter-wrap:active {
+      cursor: grabbing;
+    }
+
+    .vinyl-platter-base {
+      width: 114px;
+      height: 114px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--surface-card-1), var(--surface-card-2));
+      box-shadow:
+        5px 6px 14px rgba(var(--shadow-rgb), 0.65),
+        -4px -4px 10px rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .vinyl-disc {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      position: relative;
+      background:
+        repeating-radial-gradient(
+          circle at 50% 50%,
+          var(--vinyl-1) 0px,
+          var(--vinyl-2) 1.6px,
+          var(--vinyl-1) 3.2px,
+          var(--vinyl-2) 4.8px
+        );
+      box-shadow:
+        inset 0 0 12px rgba(25, 40, 58, 0.55),
+        0 2px 5px rgba(var(--shadow-rgb), 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vinyl-disc::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 40deg,
+        transparent 0deg,
+        rgba(255, 255, 255, 0.32) 35deg,
+        transparent 75deg,
+        rgba(200, 225, 245, 0.25) 140deg,
+        transparent 180deg,
+        rgba(255, 255, 255, 0.32) 220deg,
+        transparent 265deg,
+        rgba(200, 225, 245, 0.22) 320deg,
+        transparent 360deg
+      );
+      pointer-events: none;
+    }
+
+    .vinyl-wear-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      opacity: 0;
+      background:
+        radial-gradient(circle at 30% 35%, rgba(255, 255, 255, 0.6) 0.6px, transparent 1.5px),
+        radial-gradient(circle at 70% 65%, rgba(255, 255, 255, 0.55) 0.8px, transparent 2px),
+        radial-gradient(circle at 45% 78%, rgba(230, 235, 240, 0.65) 0.6px, transparent 1.5px),
+        conic-gradient(from 120deg, transparent 0deg, rgba(210, 210, 210, 0.4) 90deg, transparent 190deg);
+      pointer-events: none;
+    }
+
+    .vinyl-label {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--vinyl-label-1) 0%, var(--vinyl-label-2) 100%);
+      box-shadow:
+        0 0 0 2px rgba(255, 255, 255, 0.55),
+        inset 1px 1px 3px rgba(var(--shadow-rgb), 0.45);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      position: relative;
+    }
+
+    .vinyl-year {
+      font-size: 7.5px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .vinyl-rpm {
+      font-size: 6.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    .vinyl-spindle {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-main);
+      box-shadow: inset 1px 1px 2px rgba(0,0,0,0.45);
+      margin: 1px 0;
+    }
+
+    /* Tonearm */
+    .tonearm-svg {
+      position: absolute;
+      top: -4px;
+      right: -12px;
+      width: 78px;
+      height: 108px;
+      pointer-events: none;
+      z-index: 5;
+      transform-origin: 64px 18px;
+      transition: transform 0.08s linear;
+      filter: drop-shadow(2px 4px 4px rgba(var(--shadow-rgb), 0.45));
+    }
+
+    /* Vinyl Info & Oscilloscope Display */
+    .vinyl-telemetry {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .scope-screen {
+      width: 100%;
+      height: 92px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, var(--scope-bg-1) 0%, var(--scope-bg-2) 100%);
+      box-shadow:
+        inset 3px 3px 6px rgba(var(--shadow-rgb), 0.65),
+        inset -2px -2px 5px rgba(255, 255, 255, 0.85);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #memory-scope {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .scope-meta-left {
+      position: absolute;
+      bottom: 5px;
+      left: 8px;
+      font-size: 8.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-main);
+      opacity: 0.8;
+    }
+
+    .scope-meta-right {
+      position: absolute;
+      bottom: 5px;
+      right: 8px;
+      font-size: 8.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-main);
+      opacity: 0.8;
+    }
+
+    /* Vinyl Horizontal Slider (УВЯДАНИЕ) */
+    .decay-slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .decay-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--text-main);
+    }
+
+    #decay-percent-text {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-strong);
+    }
+
+    .decay-groove-track {
+      position: relative;
+      height: 26px;
+      border-radius: 13px;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(var(--shadow-rgb), 0.35) 0px,
+          rgba(var(--shadow-rgb), 0.35) 2px,
+          transparent 2px,
+          transparent 5px
+        ),
+        linear-gradient(90deg, var(--scope-bg-2) 0%, var(--scope-bg-1) 50%, #9faab5 100%);
+      box-shadow:
+        inset 3px 3px 6px rgba(var(--shadow-rgb), 0.7),
+        inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .decay-fill-bar {
+      position: absolute;
+      left: 4px;
+      top: 4px;
+      bottom: 4px;
+      border-radius: 9px;
+      background: linear-gradient(90deg, var(--accent-led-glow), rgba(120, 130, 140, 0.55));
+      pointer-events: none;
+    }
+
+    .decay-stylus-thumb {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 20px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #ffffff, var(--surface-card-2));
+      box-shadow:
+        3px 4px 8px rgba(var(--shadow-rgb), 0.75),
+        -2px -2px 6px rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: ew-resize;
+      z-index: 3;
+    }
+
+    .decay-stylus-thumb::before {
+      content: '';
+      width: 6.5px;
+      height: 6.5px;
+      border-radius: 50%;
+      background: var(--accent-led);
+      box-shadow: 0 0 6px var(--accent-led);
+    }
+
+    .stylus-grip {
+      display: flex;
+      gap: 2.5px;
+      align-items: center;
+    }
+
+    .stylus-grip span {
+      display: block;
+      width: 1.5px;
+      height: 8px;
+      border-radius: 1px;
+      background: var(--text-muted);
+      opacity: 0.55;
+      box-shadow: 1px 0 0 rgba(255, 255, 255, 0.85);
+    }
+
+    /* 5 Recessed Vertical Faders (Center Middle - A D S R VEL) */
+    .faders-bank {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 2px 12px;
+    }
+
+    .fader-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .fader-track-wrap {
+      position: relative;
+      width: 44px;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: ns-resize;
+      touch-action: none;
+    }
+
+    .fader-scale {
+      position: absolute;
+      inset: 10px 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .fader-scale span {
+      display: block;
+      width: 22px;
+      height: 1px;
+      background: rgba(var(--shadow-rgb), 0.55);
+    }
+
+    .fader-scale span.major {
+      width: 30px;
+      height: 1.5px;
+      background: var(--text-muted);
+    }
+
+    .fader-slot {
+      width: 7px;
+      height: 134px;
+      border-radius: 4px;
+      background: var(--fader-slot);
+      box-shadow:
+        inset 2px 2px 4px rgba(var(--shadow-rgb), 0.8),
+        inset -1px -1px 2px rgba(255, 255, 255, 0.9);
+      position: relative;
+      z-index: 1;
+    }
+
+    .fader-cap {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, 50%);
+      width: 38px;
+      height: 17px;
+      border-radius: 5px;
+      background: linear-gradient(180deg, #ffffff 0%, var(--surface-card-1) 48%, var(--surface-card-2) 52%, var(--surface-card-1) 100%);
+      box-shadow:
+        0 5px 10px rgba(var(--shadow-rgb), 0.75),
+        0 -2px 5px rgba(255, 255, 255, 0.95),
+        inset 0 1px 1px #ffffff;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fader-cap::after {
+      content: '';
+      width: 24px;
+      height: 2px;
+      border-radius: 1px;
+      background: var(--text-muted);
+      box-shadow: 0 1px 0 #ffffff;
+    }
+
+    /* Bottom Transport & Step Sequencer Row */
+    .center-bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 10px;
+    }
+
+    .transport-buttons-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .transport-trio {
+      display: flex;
+      gap: 10px;
+    }
+
+    .transport-btn {
+      position: relative;
+      width: 66px;
+      height: 42px;
+      border-radius: 9px;
+      background: linear-gradient(145deg, var(--surface-card-1), var(--surface-card-2));
+      box-shadow:
+        4px 5px 10px rgba(var(--shadow-rgb), 0.6),
+        -4px -4px 10px rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .transport-btn.active {
+      background: linear-gradient(145deg, var(--surface-card-2), var(--surface-card-1));
+      box-shadow:
+        inset 3px 3px 6px rgba(var(--shadow-rgb), 0.65),
+        inset -3px -3px 6px rgba(255, 255, 255, 0.95);
+      color: var(--accent-strong);
+    }
+
+    .transport-btn.active .corner-led {
+      background: var(--accent-led);
+      box-shadow: 0 0 6px var(--accent-led), 0 0 12px var(--accent-led-glow);
+    }
+
+    /* Interactive Mini Nostalgic Note Pads */
+    .memory-notes-strip {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .note-pad {
+      flex: 1;
+      height: 23px;
+      border-radius: 6px;
+      background: linear-gradient(145deg, var(--surface-card-1), var(--surface-card-2));
+      box-shadow:
+        2px 3px 5px rgba(var(--shadow-rgb), 0.55),
+        -2px -2px 5px rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+
+    .note-pad.playing,
+    .note-pad:active {
+      background: var(--surface-recessed);
+      box-shadow:
+        inset 2px 2px 4px rgba(var(--shadow-rgb), 0.65),
+        0 0 8px var(--accent-led-glow);
+      color: var(--accent-strong);
+    }
+
+    #bottom-phase-footer {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Noise/Grain Overlay responding to Decay -->
+  <div id="memory-grain"></div>
+
+  <!-- Fixed Aspect Ratio Wrapper so the 3-column layout never collapses -->
+  <div id="synth-scale-wrapper">
+    <main class="synth-enclosure" id="synth-board">
+
+      <!-- Curved Bevel Divider Left -->
+      <svg class="seam-svg-left" viewBox="0 0 34 750" preserveAspectRatio="none">
+        <path d="M16 0 L16 135 C16 162, 2 176, 2 206 L2 544 C2 574, 16 588, 16 615 L16 750"
+              fill="none" stroke="rgba(145, 168, 190, 0.55)" stroke-width="2"/>
+        <path d="M18 0 L18 135 C18 162, 4 176, 4 206 L4 544 C4 574, 18 588, 18 615 L18 750"
+              fill="none" stroke="rgba(255, 255, 255, 0.85)" stroke-width="2"/>
+      </svg>
+
+      <!-- Curved Bevel Divider Right -->
+      <svg class="seam-svg-right" viewBox="0 0 34 750" preserveAspectRatio="none">
+        <path d="M16 0 L16 135 C16 162, 2 176, 2 206 L2 544 C2 574, 16 588, 16 615 L16 750"
+              fill="none" stroke="rgba(145, 168, 190, 0.55)" stroke-width="2"/>
+        <path d="M18 0 L18 135 C18 162, 4 176, 4 206 L4 544 C4 574, 18 588, 18 615 L18 750"
+              fill="none" stroke="rgba(255, 255, 255, 0.85)" stroke-width="2"/>
+      </svg>
+
+      <!-- ==================== LEFT COLUMN: ЛЕВЫЙ КАНАЛ ==================== -->
+      <section class="panel-side panel-left">
+        <div class="side-channel-header">
+          <div class="header-title">ЛЕВЫЙ КАНАЛ</div>
+        </div>
+
+        <!-- Module 1: COMPRESSOR -->
+        <div class="fx-module">
+          <div class="fx-header-row">
+            <div class="fx-badge">COMPRESSOR</div>
+            <button class="led-toggle-btn active" data-fx="comp">
+              <span class="led-dot"></span>
+            </button>
+          </div>
+          <div class="knobs-pair">
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="compRatio" data-min="1" data-max="12" data-val="4">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">RATIO</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="compThreshold" data-min="-48" data-max="0" data-val="-22">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">THRESHOLD</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 2: FILTER -->
+        <div class="fx-module">
+          <div class="fx-header-row">
+            <div class="fx-badge">FILTER</div>
+            <button class="led-toggle-btn active" data-fx="filter">
+              <span class="led-dot"></span>
+            </button>
+          </div>
+          <div class="knobs-pair">
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="filterCutoff" data-min="220" data-max="16000" data-val="13500">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">CUTOFF</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="filterRes" data-min="0.5" data-max="12" data-val="1.6">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">RES</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 3: FLANGER -->
+        <div class="fx-module">
+          <div class="fx-header-row">
+            <div class="fx-badge">FLANGER</div>
+            <button class="led-toggle-btn active" data-fx="flutter">
+              <span class="led-dot"></span>
+            </button>
+          </div>
+          <div class="knobs-pair">
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="flutterDepth" data-min="0" data-max="100" data-val="20">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">DEPTH</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="flutterSpeed" data-min="0.2" data-max="8" data-val="1.9">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">SPEED</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 4: VINYL DUST -->
+        <div class="fx-module">
+          <div class="fx-header-row">
+            <div class="fx-badge">VINYL DUST</div>
+            <button class="led-toggle-btn active" data-fx="smear">
+              <span class="led-dot"></span>
+            </button>
+          </div>
+          <div class="knobs-pair">
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="smearMix" data-min="0" data-max="100" data-val="26">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">DRY/WET</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="smearDecay" data-min="0" data-max="100" data-val="42">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">DECAY</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== CENTER COLUMN: DYNAMIC TITLE & STEREO CHANNELS ==================== -->
+      <section class="panel-center">
+
+        <!-- SINGLE CLICKABLE DYNAMIC TITLE BUTTON (СВЕТЛЫЕ ВОСПОМИНАНИЯ -> УВЯДАЮЩИЕ ВОСПОМИНАНИЯ -> ЗАБВЕНИЕ) -->
+        <button class="title-trigger-btn" id="main-title-btn">
+          <span class="title-led"></span>
+          <span id="synth-dynamic-title" class="header-title">
+            СВЕТЛЫЕ ВОСПОМИНАНИЯ
+          </span>
+          <span class="title-led"></span>
+        </button>
+
+        <!-- DUAL CHANNEL SELECTOR BAR (ЛЕВЫЙ КАНАЛ + ПРАВЫЙ КАНАЛ) -->
+        <div class="dual-voice-bar">
+          <!-- Left Channel -->
+          <div class="voice-selector-box">
+            <div class="voice-selector-header">
+              <span class="sub-label">ЛЕВЫЙ КАНАЛ</span>
+            </div>
+            <div class="wave-buttons-row" id="voice1-waves">
+              <button class="soft-square-btn active" data-v1wave="felt">
+                <span class="corner-led"></span>
+                <svg width="22" height="12" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                  <path d="M2 8 C5 2, 8 2, 10 8 C12 14, 15 14, 17 8 C19 2, 22 2, 24 8"/>
+                </svg>
+                <span class="btn-wave-label">PURE</span>
+              </button>
+              <button class="soft-square-btn" data-v1wave="triangle">
+                <span class="corner-led"></span>
+                <svg width="22" height="12" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 10 L7 4 L13 12 L19 4 L24 10"/>
+                </svg>
+                <span class="btn-wave-label">TAPE</span>
+              </button>
+              <button class="soft-square-btn" data-v1wave="square">
+                <span class="corner-led"></span>
+                <svg width="22" height="12" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12 V5 H13 V12 H23 V5"/>
+                </svg>
+                <span class="btn-wave-label">REED</span>
+              </button>
+            </div>
+            <div class="meter-track"><div class="meter-fill" id="meter-bar-l"></div></div>
+          </div>
+
+          <!-- Right Channel -->
+          <div class="voice-selector-box">
+            <div class="voice-selector-header">
+              <span class="sub-label">ПРАВЫЙ КАНАЛ</span>
+            </div>
+            <div class="wave-buttons-row" id="voice2-waves">
+              <button class="soft-square-btn active" data-v2wave="organ">
+                <span class="corner-led"></span>
+                <svg width="22" height="12" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                  <path d="M2 10 C4 10,4 5,6 5 C8 5,8 11,10 11 C12 11,12 3,14 3 C16 3,16 11,18 11 C20 11,20 6,24 9"/>
+                </svg>
+                <span class="btn-wave-label">ORGAN</span>
+              </button>
+              <button class="soft-square-btn" data-v2wave="stepped">
+                <span class="corner-led"></span>
+                <svg width="22" height="12" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12 H6 V8 H10 V5 H15 V8 H19 V12 H24"/>
+                </svg>
+                <span class="btn-wave-label">CRUSH</span>
+              </button>
+              <button class="soft-square-btn" data-v2wave="ghost">
+                <span class="corner-led"></span>
+                <svg width="22" height="12" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                  <path d="M3 4 C9 5, 14 11, 23 12 M5 12 C12 11, 18 7, 23 6"/>
+                </svg>
+                <span class="btn-wave-label">GHOST</span>
+              </button>
+            </div>
+            <div class="meter-track"><div class="meter-fill" id="meter-bar-r"></div></div>
+          </div>
+        </div>
+
+        <!-- HERO MODULE: VINYL TURNTABLE & GROOVE DECAY SLIDER -->
+        <div class="vinyl-memory-deck">
+          <div class="vinyl-top-row">
+            <!-- Interactive Spinning Vinyl Record + Tonearm -->
+            <div class="vinyl-platter-wrap" id="vinyl-platter">
+              <div class="vinyl-platter-base">
+                <div class="vinyl-disc" id="vinyl-disc">
+                  <div class="vinyl-wear-layer" id="vinyl-wear"></div>
+                  <div class="vinyl-label">
+                    <span id="vinyl-year-label" class="vinyl-year">1998</span>
+                    <div class="vinyl-spindle"></div>
+                    <span id="vinyl-rpm-label" class="vinyl-rpm">33 RPM</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stylus Tonearm -->
+              <svg class="tonearm-svg" id="tonearm-svg" viewBox="0 0 84 118">
+                <circle cx="64" cy="18" r="12" fill="#d9e9f6" stroke="#ffffff" stroke-width="1.5"/>
+                <circle cx="64" cy="18" r="6" fill="#7c9ab8"/>
+                <path d="M64 18 L56 76 L34 102" fill="none" stroke="#6987a5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="27" y="97" width="12" height="7" rx="2" transform="rotate(-38 33 100)" fill="#496887"/>
+                <circle cx="30" cy="103" r="2" fill="var(--accent-led)"/>
+              </svg>
+            </div>
+
+            <!-- Dual-Channel Oscilloscope -->
+            <div class="vinyl-telemetry">
+              <div class="scope-screen">
+                <canvas id="memory-scope" width="290" height="92"></canvas>
+                <div class="scope-meta-left" id="freq-readout">
+                  LPF: 13.5 kHz | ECHO: 420 ms
+                </div>
+                <div class="scope-meta-right" id="loop-cycle-readout">
+                  #1
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Groove Slider: УВЯДАНИЕ -->
+          <div class="decay-slider-container">
+            <div class="decay-header-row">
+              <span>УВЯДАНИЕ</span>
+              <span id="decay-percent-text">0%</span>
+            </div>
+            <div class="decay-groove-track" id="decay-slider-track">
+              <div class="decay-fill-bar" id="decay-fill-bar" style="width: 0%;"></div>
+              <div class="decay-stylus-thumb" id="decay-stylus-thumb" style="left: 6%;">
+                <div class="stylus-grip">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5 Recessed Vertical Faders: A, D, S, R, VEL -->
+        <div class="faders-bank">
+          <div class="fader-column">
+            <div class="fader-track-wrap" data-fader="attack" data-min="0.01" data-max="1.8" data-val="0.16">
+              <div class="fader-scale"></div>
+              <div class="fader-slot"></div>
+              <div class="fader-cap"></div>
+            </div>
+            <span class="sub-label">A</span>
+          </div>
+
+          <div class="fader-column">
+            <div class="fader-track-wrap" data-fader="decay" data-min="0.1" data-max="2.5" data-val="0.85">
+              <div class="fader-scale"></div>
+              <div class="fader-slot"></div>
+              <div class="fader-cap"></div>
+            </div>
+            <span class="sub-label">D</span>
+          </div>
+
+          <div class="fader-column">
+            <div class="fader-track-wrap" data-fader="sustain" data-min="0.05" data-max="1.0" data-val="0.58">
+              <div class="fader-scale"></div>
+              <div class="fader-slot"></div>
+              <div class="fader-cap"></div>
+            </div>
+            <span class="sub-label">S</span>
+          </div>
+
+          <div class="fader-column">
+            <div class="fader-track-wrap" data-fader="release" data-min="0.2" data-max="4.5" data-val="2.2">
+              <div class="fader-scale"></div>
+              <div class="fader-slot"></div>
+              <div class="fader-cap"></div>
+            </div>
+            <span class="sub-label">R</span>
+          </div>
+
+          <div class="fader-column">
+            <div class="fader-track-wrap" data-fader="vel" data-min="0.1" data-max="1.0" data-val="0.82">
+              <div class="fader-scale"></div>
+              <div class="fader-slot"></div>
+              <div class="fader-cap"></div>
+            </div>
+            <span class="sub-label">VEL</span>
+          </div>
+        </div>
+
+        <!-- Interactive Nostalgic Note Trigger Strip (Triggers Both Channels in Stereo) -->
+        <div class="memory-notes-strip" id="note-pads">
+          <button class="note-pad" data-note="60">C4</button>
+          <button class="note-pad" data-note="62">D4</button>
+          <button class="note-pad" data-note="63">Eb4</button>
+          <button class="note-pad" data-note="65">F4</button>
+          <button class="note-pad" data-note="67">G4</button>
+          <button class="note-pad" data-note="68">Ab4</button>
+          <button class="note-pad" data-note="70">Bb4</button>
+          <button class="note-pad" data-note="72">C5</button>
+        </div>
+
+        <!-- Bottom Row: STEREO WIDTH Knob + 3 Sequencer Buttons + SPEED Knob -->
+        <div class="center-bottom-row">
+          <div class="knob-wrap">
+            <div class="knob-housing" data-param="stereoSpread" data-min="0" data-max="100" data-val="65">
+              <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+              <div class="knob-cap"><div class="knob-indicator"></div></div>
+            </div>
+            <span class="sub-label">STEREO L/R</span>
+          </div>
+
+          <div class="transport-buttons-group">
+            <div class="transport-trio">
+              <button class="transport-btn" id="btn-play-loop">
+                <span class="corner-led"></span>
+                <span>PLAY</span>
+              </button>
+              <button class="transport-btn active" id="btn-auto-decay">
+                <span class="corner-led"></span>
+                <span>AUTO</span>
+              </button>
+              <button class="transport-btn" id="btn-reset-memory">
+                <span class="corner-led"></span>
+                <span>CLEAR</span>
+              </button>
+            </div>
+            <span class="sub-label">SEQUENCER</span>
+          </div>
+
+          <div class="knob-wrap">
+            <div class="knob-housing" data-param="seqSpeed" data-min="45" data-max="135" data-val="76">
+              <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+              <div class="knob-cap"><div class="knob-indicator"></div></div>
+            </div>
+            <span class="sub-label">SPEED</span>
+          </div>
+        </div>
+
+        <!-- Bottom Dynamic State Footer -->
+        <div id="bottom-phase-footer" class="header-title">
+          СВЕТЛЫЕ ВОСПОМИНАНИЯ
+        </div>
+      </section>
+
+      <!-- ==================== RIGHT COLUMN: ПРАВЫЙ КАНАЛ ==================== -->
+      <section class="panel-side panel-right">
+        <div class="side-channel-header">
+          <div class="header-title">ПРАВЫЙ КАНАЛ</div>
+        </div>
+
+        <!-- Module 1: DELAY -->
+        <div class="fx-module">
+          <div class="fx-header-row">
+            <div class="fx-badge">DELAY</div>
+            <button class="led-toggle-btn active" data-fx="delay">
+              <span class="led-dot"></span>
+            </button>
+          </div>
+          <div class="knobs-pair">
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="delayTime" data-min="0.12" data-max="0.85" data-val="0.42">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">TIME</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="delayFeedback" data-min="0" data-max="0.88" data-val="0.44">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">FEEDBACK</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 2: CHORUS -->
+        <div class="fx-module">
+          <div class="fx-header-row">
+            <div class="fx-badge">CHORUS</div>
+            <button class="led-toggle-btn active" data-fx="chorus">
+              <span class="led-dot"></span>
+            </button>
+          </div>
+          <div class="knobs-pair">
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="chorusDepth" data-min="0" data-max="100" data-val="38">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">DEPTH</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="chorusSpeed" data-min="0.1" data-max="5" data-val="0.85">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">SPEED</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 3: LO-FI CRUSH -->
+        <div class="fx-module">
+          <div class="fx-header-row">
+            <div class="fx-badge">LO-FI CRUSH</div>
+            <button class="led-toggle-btn active" data-fx="lofi">
+              <span class="led-dot"></span>
+            </button>
+          </div>
+          <div class="knobs-pair">
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="lofiAmount" data-min="0" data-max="100" data-val="18">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">AMOUNT</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="lofiRate" data-min="0" data-max="100" data-val="24">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">RATE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Module 4: LIMITER / OUTPUT -->
+        <div class="fx-module">
+          <div class="fx-header-row">
+            <div class="fx-badge">LIMITER</div>
+            <button class="led-toggle-btn active" data-fx="limiter">
+              <span class="led-dot"></span>
+            </button>
+          </div>
+          <div class="knobs-pair">
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="limiterThreshold" data-min="-30" data-max="0" data-val="-6">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">THRESHOLD</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="knob-housing" data-param="masterOutput" data-min="0" data-max="100" data-val="82">
+                <svg class="knob-ticks" viewBox="0 0 66 66"></svg>
+                <div class="knob-cap"><div class="knob-indicator"></div></div>
+              </div>
+              <span class="sub-label">OUTPUT</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    /********************************************************************
+     * 1. STATE & PARAMETERS (DYNAMIC TITLES, DUAL CHANNELS, BLUE->GRAY PALETTE)
+     ********************************************************************/
+    const state = {
+      memoryDecay: 0, // 0% (Светлые воспоминания) -> 50% (Увядающие воспоминания) -> 100% (Забвение)
+      autoDecay: true,
+      isPlaying: false,
+      voice1Wave: 'felt',   // Left Channel (Voice I)
+      voice2Wave: 'organ',  // Right Channel (Voice II)
+      loopCycle: 1,
+      stepIndex: 0,
+      vinylAngle: 0,
+      currentTitle: 'СВЕТЛЫЕ ВОСПОМИНАНИЯ',
+
+      // ADSR + Velocity Faders
+      attack: 0.16,
+      decay: 0.85,
+      sustain: 0.58,
+      release: 2.2,
+      vel: 0.82,
+
+      // Left (FX 1) & Right (FX 2) Knobs
+      compRatio: 4,
+      compThreshold: -22,
+      filterCutoff: 13500,
+      filterRes: 1.6,
+      flutterDepth: 20,
+      flutterSpeed: 1.9,
+      smearMix: 26,
+      smearDecay: 42,
+      stereoSpread: 65,
+      seqSpeed: 76,
+      delayTime: 0.42,
+      delayFeedback: 0.44,
+      chorusDepth: 38,
+      chorusSpeed: 0.85,
+      lofiAmount: 18,
+      lofiRate: 24,
+      limiterThreshold: -6,
+      masterOutput: 82,
+
+      fxEnabled: {
+        comp: true,
+        filter: true,
+        flutter: true,
+        smear: true,
+        delay: true,
+        chorus: true,
+        lofi: true,
+        limiter: true
+      }
+    };
+
+    // Dual-Voice Stereo Score:
+    // voice1 (Left Channel): High lyrical crystal melody
+    // voice2 (Right Channel): Warm lower counterpoint & harmonic intervals
+    const dualVoiceSequence = [
+      { v1: [72, 79], v2: [48, 55, 63], dur: 1.45 }, // C5+G5 (L) | C3+G3+Eb4 (R)
+      { v1: [70],     v2: [58, 62],     dur: 0.85 }, // Bb4 (L)   | Bb3+D4 (R)
+      { v1: [67, 72], v2: [51, 58],     dur: 1.15 }, // G4+C5 (L) | Eb3+Bb3 (R)
+      { v1: [68],     v2: [44, 51, 60], dur: 1.35 }, // Ab4 (L)   | Ab2+Eb3+C4 (R)
+      { v1: [72, 75], v2: [53, 60],     dur: 1.45 }, // C5+Eb5(L) | F3+C4 (R)
+      { v1: [70],     v2: [50, 58],     dur: 0.90 }, // Bb4 (L)   | D3+Bb3 (R)
+      { v1: [65, 68], v2: [41, 48, 56], dur: 1.25 }, // F4+Ab4(L) | F2+C3+Ab3 (R)
+      { v1: [62, 67], v2: [43, 50, 59], dur: 1.65 }  // D4+G4 (L) | G2+D3+B3 (R)
+    ];
+
+    /********************************************************************
+     * 2. COLOR INTERPOLATION ENGINE (SOFT BABY BLUE -> MELANCHOLIC GRAY)
+     ********************************************************************/
+    function hexToRgb(hex) {
+      const clean = hex.replace('#', '');
+      const num = parseInt(clean, 16);
+      return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+    }
+
+    function rgbToHex(r, g, b) {
+      return '#' + [r, g, b].map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+    }
+
+    function lerpColor(hexA, hexB, t) {
+      const [r1, g1, b1] = hexToRgb(hexA);
+      const [r2, g2, b2] = hexToRgb(hexB);
+      return rgbToHex(r1 + (r2 - r1) * t, g1 + (g2 - g1) * t, b1 + (b2 - b1) * t);
+    }
+
+    // Holds current interpolated hex colors so Figma SVG export matches 1:1
+    let activeThemeColors = {};
+
+    function applyColorThemeFromDecay(decayPercent) {
+      const t = Math.max(0, Math.min(1, decayPercent / 100));
+      const root = document.documentElement;
+
+      activeThemeColors = {
+        bgGrad1: lerpColor('#f0f7fc', '#eceef0', t),
+        bgGrad2: lerpColor('#d3e3f0', '#cfd3d7', t),
+        bgGrad3: lerpColor('#c2d7e8', '#b8bdc2', t),
+        chassisSide1: lerpColor('#eef6fc', '#e6e8eb', t),
+        chassisSide2: lerpColor('#e3eef7', '#d8dce0', t),
+        chassisCenter1: lerpColor('#e2eff8', '#dfe2e6', t),
+        chassisCenter2: lerpColor('#d8e8f3', '#d2d6da', t),
+        chassisCenter3: lerpColor('#dfecf6', '#d8dcdf', t),
+        surfaceRecessed: lerpColor('#dceaf5', '#cfd3d8', t),
+        surfaceCard1: lerpColor('#f2f8fd', '#eceff2', t),
+        surfaceCard2: lerpColor('#dbeaf6', '#d2d6db', t),
+        textMain: lerpColor('#486887', '#52575d', t),
+        textMuted: lerpColor('#6a87a3', '#767c82', t),
+        accentLed: lerpColor('#38bdf8', '#8c939c', t),
+        accentStrong: lerpColor('#0284c7', '#585e66', t),
+        vinyl1: lerpColor('#4e7294', '#52565b', t),
+        vinyl2: lerpColor('#3b5d7e', '#3c4045', t),
+        vinylLabel1: lerpColor('#e7f4fe', '#e2e4e7', t),
+        vinylLabel2: lerpColor('#b9daf2', '#bfc4c9', t),
+        scopeBg1: lerpColor('#cde0ef', '#c5c9ce', t),
+        scopeBg2: lerpColor('#d7e7f5', '#d0d4d9', t),
+        faderSlot: lerpColor('#c5daeb', '#bec3c8', t),
+        seamStroke: lerpColor('#B6CFE4', '#B5B9BE', t)
+      };
+
+      const shadowR = Math.round(145 + (148 - 145) * t);
+      const shadowG = Math.round(175 + (152 - 175) * t);
+      const shadowB = Math.round(202 + (158 - 202) * t);
+
+      root.style.setProperty('--bg-grad-1', activeThemeColors.bgGrad1);
+      root.style.setProperty('--bg-grad-2', activeThemeColors.bgGrad2);
+      root.style.setProperty('--bg-grad-3', activeThemeColors.bgGrad3);
+      root.style.setProperty('--chassis-side-1', activeThemeColors.chassisSide1);
+      root.style.setProperty('--chassis-side-2', activeThemeColors.chassisSide2);
+      root.style.setProperty('--chassis-center-1', activeThemeColors.chassisCenter1);
+      root.style.setProperty('--chassis-center-2', activeThemeColors.chassisCenter2);
+      root.style.setProperty('--chassis-center-3', activeThemeColors.chassisCenter3);
+      root.style.setProperty('--surface-recessed', activeThemeColors.surfaceRecessed);
+      root.style.setProperty('--surface-card-1', activeThemeColors.surfaceCard1);
+      root.style.setProperty('--surface-card-2', activeThemeColors.surfaceCard2);
+      root.style.setProperty('--shadow-rgb', `${shadowR}, ${shadowG}, ${shadowB}`);
+      root.style.setProperty('--text-main', activeThemeColors.textMain);
+      root.style.setProperty('--text-muted', activeThemeColors.textMuted);
+      root.style.setProperty('--accent-led', activeThemeColors.accentLed);
+      root.style.setProperty('--accent-led-glow', `rgba(${hexToRgb(activeThemeColors.accentLed).join(',')}, ${0.7 - t * 0.35})`);
+      root.style.setProperty('--accent-strong', activeThemeColors.accentStrong);
+      root.style.setProperty('--vinyl-1', activeThemeColors.vinyl1);
+      root.style.setProperty('--vinyl-2', activeThemeColors.vinyl2);
+      root.style.setProperty('--vinyl-label-1', activeThemeColors.vinylLabel1);
+      root.style.setProperty('--vinyl-label-2', activeThemeColors.vinylLabel2);
+      root.style.setProperty('--scope-bg-1', activeThemeColors.scopeBg1);
+      root.style.setProperty('--scope-bg-2', activeThemeColors.scopeBg2);
+      root.style.setProperty('--fader-slot', activeThemeColors.faderSlot);
+    }
+
+    /********************************************************************
+     * 3. TRUE DUAL-VOICE STEREO WEB AUDIO API ENGINE
+     *    - Voice I (Left Channel) -> FX 1 Chain (Comp, Filter L, Flanger, Vinyl Dust)
+     *    - Voice II (Right Channel) -> FX 2 Chain (Delay R, Chorus, Lo-Fi Crush, Reverb)
+     ********************************************************************/
+    let audioCtx = null;
+    let masterGain = null;
+    let masterLimiter = null;
+
+    // Voice I (Left Channel) Nodes
+    let voice1Bus = null;
+    let v1Filter = null;
+    let v1Highpass = null;
+    let v1FlangerDelay = null;
+    let v1FlangerLfoGain = null;
+    let v1Compressor = null;
+    let v1PanNode = null;
+    let v1Analyser = null;
+
+    // Voice II (Right Channel) Nodes
+    let voice2Bus = null;
+    let v2Filter = null;
+    let v2Shaper = null;
+    let v2ChorusDelay = null;
+    let v2ChorusLfoGain = null;
+    let v2DelayNode = null;
+    let v2DelayFeedback = null;
+    let v2DelayWet = null;
+    let v2PanNode = null;
+    let v2Analyser = null;
+
+    // Shared Ambient Reverb & Vinyl Chaos
+    let reverbConvolver = null;
+    let reverbWetGain = null;
+    let hissGainNode = null;
+    let chaosDroneGain = null;
+
+    function initAudioEngine() {
+      if (audioCtx) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return;
+      }
+
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContextClass();
+
+      masterLimiter = audioCtx.createDynamicsCompressor();
+      masterLimiter.threshold.value = state.limiterThreshold;
+      masterLimiter.ratio.value = 12;
+
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.82;
+
+      // Shared Cavernous Reverb
+      reverbConvolver = audioCtx.createConvolver();
+      reverbConvolver.buffer = createReverbImpulse(4.0, 2.3);
+      reverbWetGain = audioCtx.createGain();
+      reverbWetGain.gain.value = 0.32;
+
+      // ---------------- VOICE I CHAIN (LEFT CHANNEL • FX 1) ----------------
+      voice1Bus = audioCtx.createGain();
+      v1Highpass = audioCtx.createBiquadFilter();
+      v1Highpass.type = 'highpass';
+      v1Highpass.frequency.value = 40;
+
+      v1Filter = audioCtx.createBiquadFilter();
+      v1Filter.type = 'lowpass';
+      v1Filter.frequency.value = state.filterCutoff;
+      v1Filter.Q.value = state.filterRes;
+
+      // Tape Flanger on Voice I
+      v1FlangerDelay = audioCtx.createDelay(0.05);
+      v1FlangerDelay.delayTime.value = 0.004;
+      const v1FlangerLfo = audioCtx.createOscillator();
+      v1FlangerLfo.frequency.value = 0.35;
+      v1FlangerLfoGain = audioCtx.createGain();
+      v1FlangerLfoGain.gain.value = 0.0015;
+      v1FlangerLfo.connect(v1FlangerLfoGain);
+      v1FlangerLfoGain.connect(v1FlangerDelay.delayTime);
+      v1FlangerLfo.start();
+
+      v1Compressor = audioCtx.createDynamicsCompressor();
+      v1Compressor.threshold.value = state.compThreshold;
+      v1Compressor.ratio.value = state.compRatio;
+
+      v1PanNode = audioCtx.createStereoPanner();
+      v1PanNode.pan.value = -0.62; // Left Channel
+
+      v1Analyser = audioCtx.createAnalyser();
+      v1Analyser.fftSize = 256;
+
+      voice1Bus.connect(v1Highpass);
+      v1Highpass.connect(v1Filter);
+      v1Filter.connect(v1FlangerDelay);
+      v1FlangerDelay.connect(v1Compressor);
+      v1Compressor.connect(v1PanNode);
+      v1PanNode.connect(v1Analyser);
+      v1Analyser.connect(masterLimiter);
+      v1PanNode.connect(reverbConvolver);
+
+      // ---------------- VOICE II CHAIN (RIGHT CHANNEL • FX 2) ----------------
+      voice2Bus = audioCtx.createGain();
+      v2Filter = audioCtx.createBiquadFilter();
+      v2Filter.type = 'lowpass';
+      v2Filter.frequency.value = 9500;
+
+      v2Shaper = audioCtx.createWaveShaper();
+      v2Shaper.curve = makeDistortionCurve(3);
+      v2Shaper.oversample = '2x';
+
+      // Ensemble Chorus on Voice II
+      v2ChorusDelay = audioCtx.createDelay(0.08);
+      v2ChorusDelay.delayTime.value = 0.018;
+      const v2ChorusLfo = audioCtx.createOscillator();
+      v2ChorusLfo.frequency.value = state.chorusSpeed;
+      v2ChorusLfoGain = audioCtx.createGain();
+      v2ChorusLfoGain.gain.value = 0.003;
+      v2ChorusLfo.connect(v2ChorusLfoGain);
+      v2ChorusLfoGain.connect(v2ChorusDelay.delayTime);
+      v2ChorusLfo.start();
+
+      // Right Channel Echo Delay
+      v2DelayNode = audioCtx.createDelay(2.0);
+      v2DelayNode.delayTime.value = state.delayTime;
+      v2DelayFeedback = audioCtx.createGain();
+      v2DelayFeedback.gain.value = state.delayFeedback;
+      v2DelayWet = audioCtx.createGain();
+      v2DelayWet.gain.value = 0.38;
+
+      v2DelayNode.connect(v2DelayFeedback);
+      v2DelayFeedback.connect(v2DelayNode);
+      v2DelayNode.connect(v2DelayWet);
+
+      v2PanNode = audioCtx.createStereoPanner();
+      v2PanNode.pan.value = 0.62; // Right Channel
+
+      v2Analyser = audioCtx.createAnalyser();
+      v2Analyser.fftSize = 256;
+
+      voice2Bus.connect(v2Filter);
+      v2Filter.connect(v2Shaper);
+      v2Shaper.connect(v2ChorusDelay);
+      v2ChorusDelay.connect(v2PanNode);
+      v2ChorusDelay.connect(v2DelayNode);
+      v2DelayWet.connect(v2PanNode);
+
+      v2PanNode.connect(v2Analyser);
+      v2Analyser.connect(masterLimiter);
+      v2PanNode.connect(reverbConvolver);
+
+      // Connect Reverb & Master Output
+      reverbConvolver.connect(reverbWetGain);
+      reverbWetGain.connect(masterLimiter);
+      masterLimiter.connect(masterGain);
+      masterGain.connect(audioCtx.destination);
+
+      setupVinylNoiseEngine();
+      setupSonicChaosDrone();
+      updateAudioEngineFromState();
+    }
+
+    function createReverbImpulse(duration, decay) {
+      const rate = audioCtx.sampleRate;
+      const length = rate * duration;
+      const impulse = audioCtx.createBuffer(2, length, rate);
+      for (let ch = 0; ch < 2; ch++) {
+        const channelData = impulse.getChannelData(ch);
+        for (let i = 0; i < length; i++) {
+          channelData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+        }
+      }
+      return impulse;
+    }
+
+    function makeDistortionCurve(amount) {
+      const k = typeof amount === 'number' ? amount : 5;
+      const n_samples = 44100;
+      const curve = new Float32Array(n_samples);
+      const deg = Math.PI / 180;
+      for (let i = 0; i < n_samples; ++i) {
+        const x = (i * 2) / n_samples - 1;
+        curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+      }
+      return curve;
+    }
+
+    function setupVinylNoiseEngine() {
+      const bufferSize = audioCtx.sampleRate * 4;
+      const noiseBuffer = audioCtx.createBuffer(2, bufferSize, audioCtx.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const output = noiseBuffer.getChannelData(ch);
+        let lastOut = 0.0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          output[i] = (lastOut + 0.04 * white) / 1.04;
+          lastOut = output[i];
+          output[i] *= 0.25;
+          if (Math.random() < 0.0005) {
+            output[i] += (Math.random() * 2 - 1) * 1.65;
+          }
+        }
+      }
+
+      const whiteNoise = audioCtx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
+
+      const vinylBandpass = audioCtx.createBiquadFilter();
+      vinylBandpass.type = 'bandpass';
+      vinylBandpass.frequency.value = 1850;
+      vinylBandpass.Q.value = 0.75;
+
+      hissGainNode = audioCtx.createGain();
+      hissGainNode.gain.value = 0.004;
+
+      whiteNoise.connect(vinylBandpass);
+      vinylBandpass.connect(hissGainNode);
+      hissGainNode.connect(masterLimiter);
+      whiteNoise.start(0);
+    }
+
+    function setupSonicChaosDrone() {
+      chaosDroneGain = audioCtx.createGain();
+      chaosDroneGain.gain.value = 0.0;
+
+      const oscL = audioCtx.createOscillator();
+      const oscR = audioCtx.createOscillator();
+      oscL.type = 'sawtooth';
+      oscR.type = 'triangle';
+      oscL.frequency.value = 65.41; // C2
+      oscR.frequency.value = 98.0;  // G2
+
+      const panL = audioCtx.createStereoPanner();
+      const panR = audioCtx.createStereoPanner();
+      panL.pan.value = -0.7;
+      panR.pan.value = 0.7;
+
+      const chaosFilter = audioCtx.createBiquadFilter();
+      chaosFilter.type = 'bandpass';
+      chaosFilter.frequency.value = 310;
+      chaosFilter.Q.value = 2.4;
+
+      oscL.connect(panL);
+      oscR.connect(panR);
+      panL.connect(chaosFilter);
+      panR.connect(chaosFilter);
+      chaosFilter.connect(chaosDroneGain);
+      chaosDroneGain.connect(reverbConvolver);
+
+      oscL.start();
+      oscR.start();
+    }
+
+    function updateAudioEngineFromState() {
+      const d = state.memoryDecay / 100;
+      const spread = (state.stereoSpread / 100) * 0.85;
+
+      const baseCutoff = state.fxEnabled.filter ? state.filterCutoff : 16000;
+      const effectiveCutoffL = Math.max(230, baseCutoff * Math.pow(1 - d * 0.86, 2.1));
+      const effectiveCutoffR = Math.max(210, 9800 * Math.pow(1 - d * 0.84, 1.9));
+
+      const freqKhz = effectiveCutoffL >= 1000
+        ? (effectiveCutoffL / 1000).toFixed(1) + ' kHz'
+        : Math.round(effectiveCutoffL) + ' Hz';
+      document.getElementById('freq-readout').textContent = `LPF: ${freqKhz} | ECHO: ${Math.round(state.delayTime * 1000)} ms`;
+
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+
+      // Stereo Separation for Voice I (Left) & Voice II (Right)
+      v1PanNode.pan.setTargetAtTime(-spread, now, 0.05);
+      v2PanNode.pan.setTargetAtTime(spread, now, 0.05);
+
+      // Voice I (Left) FX 1 updates
+      v1Filter.frequency.setTargetAtTime(effectiveCutoffL, now, 0.06);
+      v1Filter.Q.setTargetAtTime(state.filterRes + d * 3.0, now, 0.06);
+      v1Highpass.frequency.setTargetAtTime(40 + d * 340, now, 0.06);
+      v1Compressor.threshold.setTargetAtTime(state.compThreshold, now, 0.06);
+      v1Compressor.ratio.setTargetAtTime(state.fxEnabled.comp ? state.compRatio : 1, now, 0.06);
+
+      // Voice II (Right) FX 2 updates
+      v2Filter.frequency.setTargetAtTime(effectiveCutoffR, now, 0.06);
+      const crushDrive = 2 + (state.lofiAmount / 18) + Math.pow(d, 2) * 58;
+      v2Shaper.curve = makeDistortionCurve(crushDrive);
+
+      v2DelayNode.delayTime.setTargetAtTime(state.delayTime, now, 0.08);
+      const fb = state.fxEnabled.delay ? Math.min(0.9, state.delayFeedback + d * 0.32) : 0;
+      v2DelayFeedback.gain.setTargetAtTime(fb, now, 0.08);
+      v2DelayWet.gain.setTargetAtTime(state.fxEnabled.delay ? 0.35 + d * 0.25 : 0, now, 0.08);
+
+      // Shared Reverb & Vinyl Surface Noise
+      const reverbLevel = Math.min(0.95, 0.24 + (state.smearMix / 100) * 0.4 + d * 0.65);
+      reverbWetGain.gain.setTargetAtTime(reverbLevel, now, 0.08);
+
+      const lofiFactor = state.fxEnabled.lofi ? (state.lofiAmount / 100) : 0;
+      const vinylNoiseGain = 0.003 + lofiFactor * 0.038 + Math.pow(d, 1.35) * 0.22;
+      hissGainNode.gain.setTargetAtTime(vinylNoiseGain, now, 0.08);
+
+      const chaosLevel = d > 0.38 ? Math.pow((d - 0.38) / 0.62, 1.7) * 0.16 : 0;
+      chaosDroneGain.gain.setTargetAtTime(chaosLevel, now, 0.15);
+
+      masterLimiter.threshold.setTargetAtTime(state.limiterThreshold, now, 0.06);
+      masterGain.gain.setTargetAtTime((state.masterOutput / 100) * 0.9, now, 0.05);
+    }
+
+    // Play a note on either Voice I (Left Channel) or Voice II (Right Channel)
+    function triggerVoiceNote(midiNote, duration, voiceNum) {
+      initAudioEngine();
+      const now = audioCtx.currentTime;
+      const d = state.memoryDecay / 100;
+
+      // At high Oblivion (>84%), occasional memory dropouts occur
+      if (d > 0.84 && Math.random() < (d - 0.76) * 1.3) {
+        triggerVinylPopBurst();
+        return;
+      }
+
+      const driftCents = (Math.random() * 2 - 1) * (6 + d * 68);
+      const baseFreq = 440 * Math.pow(2, (midiNote - 69 + driftCents / 100) / 12);
+
+      const noteGain = audioCtx.createGain();
+      const voiceScale = voiceNum === 1 ? 0.21 : 0.17;
+      const peakGain = voiceScale * state.vel * (1 - d * 0.32);
+
+      const atk = Math.max(0.01, state.attack + (voiceNum === 2 ? 0.06 : 0) + d * 0.15);
+      const dec = state.decay;
+      const sus = Math.max(0.04, state.sustain * peakGain);
+      const rel = state.release + d * 1.2;
+
+      noteGain.gain.setValueAtTime(0.0001, now);
+      noteGain.gain.linearRampToValueAtTime(peakGain, now + atk);
+      noteGain.gain.exponentialRampToValueAtTime(sus, now + atk + dec);
+      noteGain.gain.exponentialRampToValueAtTime(0.0001, now + duration + rel);
+
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+
+      const waveChoice = voiceNum === 1 ? state.voice1Wave : state.voice2Wave;
+      const waveMap = {
+        felt: 'sine',
+        triangle: 'triangle',
+        square: 'square',
+        stepped: 'sawtooth',
+        organ: 'triangle',
+        ghost: 'sine'
+      };
+      osc1.type = waveMap[waveChoice] || 'sine';
+      osc2.type = waveChoice === 'organ' ? 'sawtooth' : 'triangle';
+
+      osc1.frequency.setValueAtTime(baseFreq, now);
+      osc2.frequency.setValueAtTime(baseFreq, now);
+
+      const detuneAmount = (voiceNum === 2 && state.fxEnabled.chorus ? state.chorusDepth * 0.25 : 4) + d * 34;
+      osc2.detune.setValueAtTime(detuneAmount, now);
+
+      // Wow & Flutter pitch warp
+      if (state.fxEnabled.flutter) {
+        const flutterLfo = audioCtx.createOscillator();
+        const flutterGain = audioCtx.createGain();
+        flutterLfo.frequency.value = state.flutterSpeed + (voiceNum === 2 ? 0.4 : 0);
+        flutterGain.gain.value = (state.flutterDepth * 0.08) + Math.pow(d, 1.4) * 14;
+        flutterLfo.connect(flutterGain);
+        flutterGain.connect(osc1.frequency);
+        flutterGain.connect(osc2.frequency);
+        flutterLfo.start(now);
+        flutterLfo.stop(now + duration + rel + 0.1);
+      }
+
+      const osc2Mix = audioCtx.createGain();
+      osc2Mix.gain.value = 0.42;
+
+      osc1.connect(noteGain);
+      osc2.connect(osc2Mix);
+      osc2Mix.connect(noteGain);
+
+      // Route Voice I -> FX 1 Left Bus, Voice II -> FX 2 Right Bus
+      if (voiceNum === 1) {
+        noteGain.connect(voice1Bus);
+      } else {
+        noteGain.connect(voice2Bus);
+      }
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + duration + rel + 0.1);
+      osc2.stop(now + duration + rel + 0.1);
+
+      if (d > 0.18 && Math.random() < d * 0.8) {
+        triggerVinylPopBurst();
+      }
+    }
+
+    // Trigger both voices in stereo when user clicks a keyboard note pad
+    function triggerStereoDuoNote(midiNote, duration = 1.2) {
+      triggerVoiceNote(midiNote, duration, 1);          // Voice I (Left)
+      triggerVoiceNote(midiNote - 12, duration * 1.1, 2); // Voice II (Right, 1 octave lower)
+      setTimeout(() => {
+        triggerVoiceNote(midiNote - 5, duration * 0.9, 2); // Warm fifth harmony on Right
+      }, 65);
+    }
+
+    function triggerVinylPopBurst() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(1400 + Math.random() * 1800, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.018);
+
+      const d = state.memoryDecay / 100;
+      g.gain.setValueAtTime(0.04 + d * 0.11, now);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
+
+      osc.connect(g);
+      g.connect(masterLimiter);
+      osc.start(now);
+      osc.stop(now + 0.022);
+    }
+
+    /********************************************************************
+     * 4. SEQUENCER LOOP & TITLE CLICK TO PLAY
+     ********************************************************************/
+    let loopTimer = null;
+
+    function scheduleNextLoopStep() {
+      if (!state.isPlaying) return;
+
+      const step = dualVoiceSequence[state.stepIndex];
+      const tempoScale = 76 / state.seqSpeed;
+      const stepDur = step.dur * tempoScale;
+
+      highlightNotePad(step.v1[0]);
+
+      // Voice I (Left Channel) melody notes
+      step.v1.forEach((n, idx) => {
+        setTimeout(() => {
+          if (state.isPlaying) triggerVoiceNote(n, stepDur * 0.88, 1);
+        }, idx * 60);
+      });
+
+      // Voice II (Right Channel) counterpoint notes
+      step.v2.forEach((n, idx) => {
+        setTimeout(() => {
+          if (state.isPlaying) triggerVoiceNote(n, stepDur * 0.95, 2);
+        }, idx * 85 + 30);
+      });
+
+      state.stepIndex++;
+      if (state.stepIndex >= dualVoiceSequence.length) {
+        state.stepIndex = 0;
+        state.loopCycle++;
+        document.getElementById('loop-cycle-readout').textContent = `#${state.loopCycle}`;
+
+        if (state.autoDecay && state.memoryDecay < 100) {
+          setMemoryDecay(Math.min(100, state.memoryDecay + 11));
+        }
+      } else if (state.autoDecay && state.memoryDecay < 100) {
+        setMemoryDecay(Math.min(100, state.memoryDecay + 1.4));
+      }
+
+      loopTimer = setTimeout(scheduleNextLoopStep, stepDur * 1000);
+    }
+
+    function toggleLoopPlayback() {
+      initAudioEngine();
+      state.isPlaying = !state.isPlaying;
+
+      const playBtn = document.getElementById('btn-play-loop');
+      const mainTitleBtn = document.getElementById('main-title-btn');
+
+      playBtn.classList.toggle('active', state.isPlaying);
+      mainTitleBtn.classList.toggle('playing', state.isPlaying);
+
+      if (state.isPlaying) {
+        scheduleNextLoopStep();
+      } else {
+        clearTimeout(loopTimer);
+      }
+      updateDynamicTitles(Math.round(state.memoryDecay));
+    }
+
+    function highlightNotePad(midi) {
+      const normalized = ((midi - 60) % 12) + 60;
+      const pads = document.querySelectorAll('.note-pad');
+      pads.forEach(p => {
+        if (Number(p.dataset.note) === normalized || Number(p.dataset.note) === midi) {
+          p.classList.add('playing');
+          setTimeout(() => p.classList.remove('playing'), 380);
+        }
+      });
+    }
+
+    /********************************************************************
+     * 5. DYNAMIC TITLES (СВЕТЛЫЕ ВОСПОМИНАНИЯ -> УВЯДАЮЩИЕ ВОСПОМИНАНИЯ -> ЗАБВЕНИЕ)
+     ********************************************************************/
+    function updateDynamicTitles(pct) {
+      let phaseTitle = 'СВЕТЛЫЕ ВОСПОМИНАНИЯ';
+      let yearText = '1998';
+
+      if (pct >= 34 && pct <= 67) {
+        phaseTitle = 'УВЯДАЮЩИЕ ВОСПОМИНАНИЯ';
+        yearText = '1976';
+      } else if (pct > 67) {
+        phaseTitle = 'ЗАБВЕНИЕ';
+        yearText = '????';
+      }
+
+      state.currentTitle = phaseTitle;
+
+      document.getElementById('synth-dynamic-title').textContent = phaseTitle;
+      document.getElementById('bottom-phase-footer').textContent = phaseTitle;
+      document.getElementById('vinyl-year-label').textContent = yearText;
+    }
+
+    function setMemoryDecay(newVal) {
+      state.memoryDecay = Math.max(0, Math.min(100, newVal));
+      const pct = Math.round(state.memoryDecay);
+
+      // 1. Interpolate entire UI palette from Soft Baby Blue -> Melancholic Gray
+      applyColorThemeFromDecay(pct);
+
+      // 2. Update Dynamic Titles ("СВЕТЛЫЕ ВОСПОМИНАНИЯ", "УВЯДАЮЩИЕ ВОСПОМИНАНИЯ", "ЗАБВЕНИЕ")
+      updateDynamicTitles(pct);
+
+      // 3. Update groove slider thumb & fill
+      const fillBar = document.getElementById('decay-fill-bar');
+      const thumb = document.getElementById('decay-stylus-thumb');
+      fillBar.style.width = `${pct}%`;
+      thumb.style.left = `${6 + pct * 0.88}%`;
+      document.getElementById('decay-percent-text').textContent = `${pct}%`;
+
+      // 4. Pivot tonearm across vinyl record
+      const tonearm = document.getElementById('tonearm-svg');
+      const armAngle = 2 + (pct / 100) * 26;
+      tonearm.style.transform = `rotate(${armAngle}deg)`;
+
+      // 5. Vinyl wear & ambient grain
+      document.getElementById('vinyl-wear').style.opacity = (pct / 100) * 0.92;
+      document.getElementById('memory-grain').style.opacity = (0.03 + (pct / 100) * 0.24).toFixed(3);
+
+      // 6. Sync Filter & Lo-Fi knobs visually
+      const filterKnob = document.querySelector('.knob-housing[data-param="filterCutoff"]');
+      if (filterKnob) {
+        const displayCutoff = Math.max(220, 13500 * Math.pow(1 - (pct / 100) * 0.86, 1.8));
+        updateKnobVisual(filterKnob, displayCutoff);
+      }
+      const lofiKnob = document.querySelector('.knob-housing[data-param="lofiAmount"]');
+      if (lofiKnob) {
+        const displayLofi = Math.min(100, 18 + pct * 0.82);
+        updateKnobVisual(lofiKnob, displayLofi);
+      }
+
+      updateAudioEngineFromState();
+    }
+
+    // Groove Slider Pointer Events
+    const sliderTrack = document.getElementById('decay-slider-track');
+    let isDraggingGroove = false;
+
+    function handleGroovePointer(e) {
+      const rect = sliderTrack.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const norm = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      setMemoryDecay(norm * 100);
+    }
+
+    sliderTrack.addEventListener('pointerdown', (e) => {
+      initAudioEngine();
+      isDraggingGroove = true;
+      sliderTrack.setPointerCapture(e.pointerId);
+      handleGroovePointer(e);
+    });
+    sliderTrack.addEventListener('pointermove', (e) => {
+      if (isDraggingGroove) handleGroovePointer(e);
+    });
+    sliderTrack.addEventListener('pointerup', () => { isDraggingGroove = false; });
+
+    // Vinyl Platter Scrubbing
+    const vinylPlatter = document.getElementById('vinyl-platter');
+    let isDraggingVinyl = false;
+    let vinylStartY = 0;
+    let vinylStartDecay = 0;
+
+    vinylPlatter.addEventListener('pointerdown', (e) => {
+      initAudioEngine();
+      isDraggingVinyl = true;
+      vinylStartY = e.clientY;
+      vinylStartDecay = state.memoryDecay;
+      vinylPlatter.setPointerCapture(e.pointerId);
+      triggerVinylPopBurst();
+    });
+    vinylPlatter.addEventListener('pointermove', (e) => {
+      if (!isDraggingVinyl) return;
+      const dy = vinylStartY - e.clientY;
+      setMemoryDecay(vinylStartDecay + dy * 0.55);
+    });
+    vinylPlatter.addEventListener('pointerup', () => { isDraggingVinyl = false; });
+
+    /********************************************************************
+     * 6. KNOBS, FADERS, DUAL-VOICE BUTTONS & OSCILLOSCOPE
+     ********************************************************************/
+    function buildKnobTicks() {
+      document.querySelectorAll('.knob-ticks').forEach(svg => {
+        const cx = 33, cy = 33;
+        const totalTicks = 21;
+        const startAngle = -135;
+        const endAngle = 135;
+        let paths = '';
+
+        for (let i = 0; i < totalTicks; i++) {
+          const deg = startAngle + (i / (totalTicks - 1)) * (endAngle - startAngle);
+          const rad = (deg - 90) * (Math.PI / 180);
+          const isMajor = i % 5 === 0;
+          const rInner = 26.5;
+          const rOuter = isMajor ? 31.5 : 29.5;
+          const x1 = cx + Math.cos(rad) * rInner;
+          const y1 = cy + Math.sin(rad) * rInner;
+          const x2 = cx + Math.cos(rad) * rOuter;
+          const y2 = cy + Math.sin(rad) * rOuter;
+          const strokeColor = isMajor ? 'var(--text-main)' : 'var(--text-muted)';
+          const width = isMajor ? '1.4' : '1';
+          paths += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${strokeColor}" stroke-opacity="0.7" stroke-width="${width}" stroke-linecap="round"/>`;
+        }
+        svg.innerHTML = paths;
+      });
+    }
+
+    function updateKnobVisual(housing, val) {
+      const min = parseFloat(housing.dataset.min);
+      const max = parseFloat(housing.dataset.max);
+      const norm = Math.max(0, Math.min(1, (val - min) / (max - min)));
+      const deg = -135 + norm * 270;
+      const indicator = housing.querySelector('.knob-indicator');
+      if (indicator) {
+        indicator.style.transform = `rotate(${deg}deg)`;
+      }
+    }
+
+    function initKnobs() {
+      buildKnobTicks();
+      document.querySelectorAll('.knob-housing').forEach(housing => {
+        const param = housing.dataset.param;
+        const min = parseFloat(housing.dataset.min);
+        const max = parseFloat(housing.dataset.max);
+        const initialVal = parseFloat(housing.dataset.val);
+        state[param] = initialVal;
+        updateKnobVisual(housing, initialVal);
+
+        let dragging = false;
+        let startY = 0;
+        let startVal = initialVal;
+
+        housing.addEventListener('pointerdown', (e) => {
+          initAudioEngine();
+          dragging = true;
+          startY = e.clientY;
+          startVal = state[param];
+          housing.setPointerCapture(e.pointerId);
+        });
+
+        housing.addEventListener('pointermove', (e) => {
+          if (!dragging) return;
+          const deltaY = startY - e.clientY;
+          const range = max - min;
+          const newVal = Math.max(min, Math.min(max, startVal + (deltaY / 130) * range));
+          state[param] = newVal;
+          housing.dataset.val = newVal;
+          updateKnobVisual(housing, newVal);
+          updateAudioEngineFromState();
+        });
+
+        housing.addEventListener('pointerup', () => { dragging = false; });
+      });
+    }
+
+    function initFaders() {
+      document.querySelectorAll('.fader-scale').forEach(scale => {
+        let html = '';
+        for (let i = 0; i < 19; i++) {
+          html += `<span class="${i % 4 === 0 ? 'major' : ''}"></span>`;
+        }
+        scale.innerHTML = html;
+      });
+
+      document.querySelectorAll('.fader-track-wrap').forEach(track => {
+        const param = track.dataset.fader;
+        const min = parseFloat(track.dataset.min);
+        const max = parseFloat(track.dataset.max);
+        const initialVal = parseFloat(track.dataset.val);
+        const cap = track.querySelector('.fader-cap');
+
+        function setFaderPos(val) {
+          state[param] = val;
+          const norm = Math.max(0, Math.min(1, (val - min) / (max - min)));
+          const bottomPct = 10 + norm * 80;
+          cap.style.bottom = `${bottomPct}%`;
+        }
+
+        setFaderPos(initialVal);
+
+        let dragging = false;
+        function updateFromPointer(e) {
+          const rect = track.getBoundingClientRect();
+          const norm = 1 - Math.max(0, Math.min(1, (e.clientY - rect.top - 14) / (rect.height - 28)));
+          const val = min + norm * (max - min);
+          setFaderPos(val);
+        }
+
+        track.addEventListener('pointerdown', (e) => {
+          initAudioEngine();
+          dragging = true;
+          track.setPointerCapture(e.pointerId);
+          updateFromPointer(e);
+        });
+        track.addEventListener('pointermove', (e) => {
+          if (dragging) updateFromPointer(e);
+        });
+        track.addEventListener('pointerup', () => { dragging = false; });
+      });
+    }
+
+    function initButtonsAndPads() {
+      // Clicking the Main Title starts/stops the melody
+      document.getElementById('main-title-btn').addEventListener('click', toggleLoopPlayback);
+
+      // FX LED Toggles
+      document.querySelectorAll('.led-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          initAudioEngine();
+          const fx = btn.dataset.fx;
+          state.fxEnabled[fx] = !state.fxEnabled[fx];
+          btn.classList.toggle('active', state.fxEnabled[fx]);
+          updateAudioEngineFromState();
+        });
+      });
+
+      // Voice I (Left Channel) Waveform Buttons
+      document.querySelectorAll('#voice1-waves .soft-square-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          initAudioEngine();
+          document.querySelectorAll('#voice1-waves .soft-square-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.voice1Wave = btn.dataset.v1wave;
+          triggerVoiceNote(72, 0.9, 1);
+        });
+      });
+
+      // Voice II (Right Channel) Waveform Buttons
+      document.querySelectorAll('#voice2-waves .soft-square-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          initAudioEngine();
+          document.querySelectorAll('#voice2-waves .soft-square-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.voice2Wave = btn.dataset.v2wave;
+          triggerVoiceNote(55, 1.0, 2);
+        });
+      });
+
+      // Note Pads (Play Dual-Voice Stereo Chord)
+      document.querySelectorAll('.note-pad').forEach(pad => {
+        pad.addEventListener('pointerdown', () => {
+          const midi = Number(pad.dataset.note);
+          triggerStereoDuoNote(midi, 1.1);
+        });
+      });
+
+      // Transport Buttons
+      document.getElementById('btn-play-loop').addEventListener('click', toggleLoopPlayback);
+
+      const autoFadeBtn = document.getElementById('btn-auto-decay');
+      autoFadeBtn.addEventListener('click', () => {
+        state.autoDecay = !state.autoDecay;
+        autoFadeBtn.classList.toggle('active', state.autoDecay);
+      });
+
+      document.getElementById('btn-reset-memory').addEventListener('click', () => {
+        initAudioEngine();
+        state.loopCycle = 1;
+        document.getElementById('loop-cycle-readout').textContent = '#1';
+        setMemoryDecay(0);
+        triggerStereoDuoNote(72, 1.3);
+      });
+    }
+
+    // Live Dual-Channel Stereo Oscilloscope & Level Meters
+    const scopeCanvas = document.getElementById('memory-scope');
+    const scopeCtx = scopeCanvas.getContext('2d');
+    let animPhase = 0;
+
+    function animateVisuals() {
+      animPhase += 0.045;
+      const d = state.memoryDecay / 100;
+
+      // Spin Vinyl Record
+      const disc = document.getElementById('vinyl-disc');
+      const spinSpeed = state.isPlaying ? 0.92 : 0.2;
+      const flutterWobble = Math.sin(animPhase * 2.3) * d * 4.5;
+      state.vinylAngle = (state.vinylAngle + spinSpeed) % 360;
+      disc.style.transform = `rotate(${(state.vinylAngle + flutterWobble).toFixed(2)}deg)`;
+
+      const w = scopeCanvas.width;
+      const h = scopeCanvas.height;
+      scopeCtx.clearRect(0, 0, w, h);
+
+      // Center divider line
+      scopeCtx.strokeStyle = 'rgba(110, 130, 150, 0.22)';
+      scopeCtx.lineWidth = 1;
+      scopeCtx.beginPath();
+      scopeCtx.moveTo(0, h / 2);
+      scopeCtx.lineTo(w, h / 2);
+      scopeCtx.stroke();
+
+      let dataL = null;
+      let dataR = null;
+      let rmsL = 0.08;
+      let rmsR = 0.08;
+
+      if (v1Analyser && v2Analyser && state.isPlaying) {
+        dataL = new Uint8Array(v1Analyser.frequencyBinCount);
+        dataR = new Uint8Array(v2Analyser.frequencyBinCount);
+        v1Analyser.getByteTimeDomainData(dataL);
+        v2Analyser.getByteTimeDomainData(dataR);
+
+        let sumL = 0, sumR = 0;
+        for (let i = 0; i < dataL.length; i++) {
+          sumL += Math.abs(dataL[i] - 128);
+          sumR += Math.abs(dataR[i] - 128);
+        }
+        rmsL = Math.min(1, (sumL / dataL.length) / 26);
+        rmsR = Math.min(1, (sumR / dataR.length) / 26);
+      } else {
+        rmsL = 0.12 + Math.sin(animPhase * 1.5) * 0.05;
+        rmsR = 0.12 + Math.cos(animPhase * 1.3) * 0.05;
+      }
+
+      document.getElementById('meter-bar-l').style.width = `${Math.round(12 + rmsL * 88)}%`;
+      document.getElementById('meter-bar-r').style.width = `${Math.round(12 + rmsR * 88)}%`;
+
+      // Draw Voice I (Left Channel) Wave
+      scopeCtx.beginPath();
+      scopeCtx.lineWidth = 2;
+      scopeCtx.strokeStyle = activeThemeColors.accentStrong || '#0284c7';
+      for (let x = 0; x < w; x++) {
+        const normX = x / w;
+        let yOffset = 0;
+        if (dataL) {
+          const idx = Math.floor(normX * dataL.length);
+          yOffset = ((dataL[idx] - 128) / 128) * 22;
+        } else {
+          const clean = Math.sin(normX * Math.PI * 4 + animPhase) * (12 * (1 - d * 0.5));
+          const noise = (Math.random() * 2 - 1) * (d * 13);
+          yOffset = clean + noise - 4;
+        }
+        const y = h / 2 + yOffset;
+        if (x === 0) scopeCtx.moveTo(x, y);
+        else scopeCtx.lineTo(x, y);
+      }
+      scopeCtx.stroke();
+
+      // Draw Voice II (Right Channel) Counterpoint Wave
+      scopeCtx.beginPath();
+      scopeCtx.lineWidth = 1.6;
+      scopeCtx.strokeStyle = activeThemeColors.textMain || '#486887';
+      for (let x = 0; x < w; x++) {
+        const normX = x / w;
+        let yOffset = 0;
+        if (dataR) {
+          const idx = Math.floor(normX * dataR.length);
+          yOffset = ((dataR[idx] - 128) / 128) * 20;
+        } else {
+          const clean = Math.cos(normX * Math.PI * 2.5 - animPhase * 0.8) * (10 * (1 - d * 0.45));
+          const noise = (Math.random() * 2 - 1) * (d * 11);
+          yOffset = clean + noise + 5;
+        }
+        const y = h / 2 + yOffset;
+        if (x === 0) scopeCtx.moveTo(x, y);
+        else scopeCtx.lineTo(x, y);
+      }
+      scopeCtx.stroke();
+
+      requestAnimationFrame(animateVisuals);
+    }
+
+    // Proportional viewport scaling so the 3-column layout is ALWAYS preserved like Photo 2
+    function fitSynthToViewport() {
+      const wrapper = document.getElementById('synth-scale-wrapper');
+      if (!wrapper) return;
+      const availW = window.innerWidth - 28;
+      const availH = window.innerHeight - 28;
+      const scale = Math.min(1, availW / 1080, availH / 750);
+      wrapper.style.transform = `scale(${scale.toFixed(4)})`;
+    }
+
+    window.addEventListener('resize', fitSynthToViewport);
+
+    window.onload = function () {
+      fitSynthToViewport();
+      initKnobs();
+      initFaders();
+      initButtonsAndPads();
+      setMemoryDecay(0);
+      animateVisuals();
+    };
+  </script>
+</body>
+</html>
